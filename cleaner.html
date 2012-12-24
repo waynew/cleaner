@@ -3,6 +3,7 @@
         <title>Cleaneriffic - Wayne's World</title>
         <script>
             var categories = localStorage['categories'].split(',') || [];
+            categories = categories.splice(categories.indexOf(''), 1);
 
             function getCategory(){
                 var category = document.getElementById('category');
@@ -12,6 +13,7 @@
             function addCategory(){
                 categories.push(getCategory());
                 localStorage['categories'] = categories.join(',');
+                document.getElementById('category').value = '';
                 displayCategories();
             }
 
@@ -22,7 +24,7 @@
                     categories.splice(index, 1);
                 }
                 else{
-                    alert(category + " doesn't exist.");
+                    alert('<' + category + "> doesn't exist.");
                 }
                 displayCategories();
                 localStorage['categories'] = categories.join(',');
@@ -32,16 +34,31 @@
                 var output = document.getElementById('categories');
                 output.innerHTML = categories.join('<br />');
             }
+
+            function processKey(e){
+                if(null == e){
+                    e = window.event;
+                }
+
+                if(e.keyCode == 13){
+                    document.getElementById('add').click();
+                }
+                else if(e.keyCode == 27){
+                    document.getElementById('remove').click();
+                }
+            }
+
         </script>
     </head>
     <body>
         <div id="categories">
         </div>
-        <input type="text" id="category" />
-        <button onclick="addCategory()">Add</button>
-        <button onclick="removeCategory()">Remove</button>
+        <input type="text" id="category" onkeydown="processKey(event)" />
+        <button id="add" onclick="addCategory()">Add</button>
+        <button id="remove" onclick="removeCategory()">Remove</button>
         <script>
             displayCategories();
+            document.getElementById('category').focus();
         </script>
     </body>
 </html>
