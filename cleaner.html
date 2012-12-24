@@ -3,12 +3,34 @@
         <title>Cleaneriffic - Wayne's World</title>
         <script>
             var categories = localStorage['categories'].split(',') || [];
-            function addCategory(){
+
+            function getCategory(){
                 var category = document.getElementById('category');
-                var output = document.getElementById('categories');
-                categories.push(category.value);
-                output.innerHTML = categories.join('<br />');
+                return category.value;
+            }
+
+            function addCategory(){
+                categories.push(getCategory());
                 localStorage['categories'] = categories.join(',');
+                displayCategories();
+            }
+
+            function removeCategory(){
+                var category = getCategory();
+                var index = categories.indexOf(category);
+                if (index > -1){
+                    categories.splice(index, 1);
+                }
+                else{
+                    alert(category + " doesn't exist.");
+                }
+                displayCategories();
+                localStorage['categories'] = categories.join(',');
+            }
+
+            function displayCategories(){
+                var output = document.getElementById('categories');
+                output.innerHTML = categories.join('<br />');
             }
         </script>
     </head>
@@ -17,9 +39,9 @@
         </div>
         <input type="text" id="category" />
         <button onclick="addCategory()">Add</button>
+        <button onclick="removeCategory()">Remove</button>
         <script>
-            var output = document.getElementById('categories');
-            output.innerHTML = categories;
+            displayCategories();
         </script>
     </body>
 </html>
