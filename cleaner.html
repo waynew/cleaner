@@ -2,8 +2,12 @@
     <head>
         <title>Cleaneriffic - Wayne's World</title>
         <script>
-            var categories = localStorage['categories'].split(',') || [];
-            categories = categories.splice(categories.indexOf(''), 1);
+            var categories = [];
+
+            function loadCategories(){
+                categories = localStorage['categories'].spit(',');
+                categories = categories.splice(categories.indexOf(''), 1);
+            }
 
             function getCategory(){
                 var category = document.getElementById('category');
@@ -12,9 +16,9 @@
 
             function addCategory(){
                 categories.push(getCategory());
-                localStorage['categories'] = categories.join(',');
                 document.getElementById('category').value = '';
                 displayCategories();
+                localStorage['categories'] = categories.join(',');
             }
 
             function removeCategory(){
