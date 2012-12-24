@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <title>Cleaneriffic - Wayne's World</title>
+        <script>
+            var categories = localStorage['categories'].split(',') || [];
+            function addCategory(){
+                var category = document.getElementById('category');
+                var output = document.getElementById('categories');
+                categories.push(category.value);
+                output.innerHTML = categories.join('<br />');
+                localStorage['categories'] = categories.join(',');
+            }
+        </script>
+    </head>
+    <body>
+        <div id="categories">
+        </div>
+        <input type="text" id="category" />
+        <button onclick="addCategory()">Add</button>
+        <script>
+            var output = document.getElementById('categories');
+            output.innerHTML = categories;
+        </script>
+    </body>
+</html>
