@@ -2,11 +2,26 @@
     <head>
         <title>Cleaneriffic - Wayne's World</title>
         <script>
-            var categories = [];
 
             function loadCategories(){
-                categories = localStorage['categories'].spit(',');
-                categories = categories.splice(categories.indexOf(''), 1);
+                categories = (localStorage['categories'] || '').split(',');
+                var index = categories.indexOf('');
+                if (index > -1){
+                    categories.splice(index, 1);
+                }
+            }
+            
+            function loadPeople(){
+                people = (localStorage['people'] || '').split(',');
+                var index = people.indexOf('');
+                if (index > -1){
+                    people.splice(index, 1);
+                }
+            }
+
+            function loadData(){
+                loadCategories();
+                loadPeople();
             }
 
             function getCategory(){
@@ -26,6 +41,7 @@
                 var index = categories.indexOf(category);
                 if (index > -1){
                     categories.splice(index, 1);
+                    document.getElementById('category').value = '';
                 }
                 else{
                     alert('<' + category + "> doesn't exist.");
@@ -34,34 +50,82 @@
                 localStorage['categories'] = categories.join(',');
             }
 
+            function getPerson(){
+                var person = document.getElementById('person');
+                return person.value;
+            }
+
+            function addPerson(){
+                people.push(getPerson());
+                document.getElementById('person').value = '';
+                displayPeople();
+                localStorage['people'] = people.join(',');
+            }
+
+            function removePerson(){
+                var person = getPerson();
+                var index = people.indexOf(person);
+                if (index > -1){
+                    people.splice(index, 1);
+                    document.getElementById('person').value = '';
+                }
+                else{
+                    alert('<' + person + "> doesn't exist.");
+                }
+                displayPeople();
+                localStorage['people'] = people.join(',');
+            }
+
+            function displayPeople(){
+                var output = document.getElementById('people');
+                output.innerHTML = people.join('<br />');
+            }
+
             function displayCategories(){
                 var output = document.getElementById('categories');
                 output.innerHTML = categories.join('<br />');
             }
 
-            function processKey(e){
+            function processKey(e, enter_id, esc_id){
                 if(null == e){
                     e = window.event;
                 }
 
                 if(e.keyCode == 13){
-                    document.getElementById('add').click();
+                    document.getElementById(enter_id).click();
                 }
                 else if(e.keyCode == 27){
-                    document.getElementById('remove').click();
+                    document.getElementById(esc_id).click();
                 }
             }
 
         </script>
     </head>
     <body>
-        <div id="categories">
+        <div id="chart_div">
         </div>
-        <input type="text" id="category" onkeydown="processKey(event)" />
-        <button id="add" onclick="addCategory()">Add</button>
-        <button id="remove" onclick="removeCategory()">Remove</button>
+        <div style="border: thin black solid; display: inline-block;">
+            Categories:
+        <div id="categories" style="border-top: thin black solid">
+        </div>
+        <input type="text" id="category" onkeydown="processKey(event, 'add_category', 'remove_category')" />
+        <button id="add_category" onclick="addCategory()">Add</button>
+        <button id="remove_category" onclick="removeCategory()">Remove</button>
+        </div>
+
+        <div style="border: thin black solid; display: inline-block; vertical-align: top;">
+            People:
+            <div id="people" style="border-top: thin black solid; vertical-align: top;">
+            </div>
+            <input type="text" id="person" onkeydown="processKey(event, 'add_person', 'remove_person')" />
+            <button id="add_person" onclick="addPerson()">Add</button>
+            <button id="remove_person" onclick="removePerson()">Remove</button>
+        </div>
+
         <script>
+            loadData();
             displayCategories();
+            displayPeople();
             document.getElementById('category').focus();
         </script>
     </body>
