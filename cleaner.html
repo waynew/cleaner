@@ -1,53 +1,11 @@
 <html>
     <head>
         <title>Cleaneriffic - Wayne's World</title>
-        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript" src="jquery.js"></script>
+        <script type="text/javascript" src="jquery.flot.js"></script>
         <script type="text/javascript">
-            google.load("visualization", "1", {packages:["corechart"]});
-            google.setOnLoadCallback(drawChart);
-            function drawChart() {
-              var data = google.visualization.arrayToDataTable([
-                ['Year', 'Sales', 'Expenses'],
-                ['2004',  1000,      400],
-                ['2005',  1170,      460],
-                ['2006',  660,       1120],
-                ['2007',  1030,      540]
-              ]);
-
-              var options = {
-                title: 'The Cleaner',
-                hAxis: {title: 'Stuff Cleaned',
-                        titleTextStyle: {color: 'red'},
-                       },
-                vAxis: {
-                           format: "##",
-                        viewWindowMode: 'explicit',
-                                        viewWindow: {'max': 30,
-                                            'min': 0}
-
-                       }
-              };
-
-              var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-              chart.draw(google.visualization.arrayToDataTable(dataAsTable()), options);
-            }
             var categories = [];
             var people = [];
-
-            function dataAsTable(){
-                var zeros = new Array(people.length+1);
-                for(var x = 0; x < zeros.length; x++) zeros[x] = 0;
-                var cats = new Array(categories.length);
-                for(var x = 0; x < cats.length; x++){
-                    cats[x] = zeros.slice(0);
-                    cats[x][0] = categories[x];
-                }
-                var data = [
-                    ['Category'].concat(people),
-                    ].concat(cats);
-                console.log(data);
-                return data;
-            }
 
             function loadCategories(){
                 categories = (localStorage['categories'] || '').split(',');
@@ -145,10 +103,46 @@
                 }
             }
 
+            $(function() { 
+                var data = [
+                    {"label": "Karyn",
+                    "data": [[0, 10],
+                             [1, 12],
+                             [2, 3],
+                             [3, 4]]
+                     },
+                    {"label": "KayLynn",
+                    "data": [[0, 5],
+                             [0, 2],
+                             [0, 8],
+                             [0, 2]]
+                     },
+                    {"label": "Rosalyn",
+                     "data": [[8, 13, 9, 10]]
+                     }
+                     ];
+                  var options = {
+                     series: {
+                         bars: {
+                             show: true,
+                             barWidth: 0.5,
+                             align: 'center'
+                         },
+                     },
+                     yaxes: {
+                         min: 0
+                     },
+                     xaxis: {
+                         autoscaleMargin: .10
+                     }
+                 };
+                $.plot("#chart_div", data, options);
+            });
+
         </script>
     </head>
     <body>
-        <div id="chart_div">
+        <div id="chart_div" style="width:800px; height: 400px;">
         </div>
         <div style="border: thin black solid; display: inline-block;">
             Categories:
