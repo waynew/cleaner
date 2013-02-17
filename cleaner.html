@@ -1,143 +1,167 @@
 <html>
     <head>
         <title>Cleaneriffic - Wayne's World</title>
-        <script type="text/javascript" src="jquery.js"></script>
+        <script type="text/javascript" src="jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="jquery.flot.js"></script>
+        <script type="text/javascript" src="jquery.flot.orderBars.js"></script>
         <script type="text/javascript">
-            var categories = [];
-            var people = [];
+var categories = [];
+var people = [];
 
-            function loadCategories(){
-                categories = (localStorage['categories'] || '').split(',');
-                var index = categories.indexOf('');
-                if (index > -1){
-                    categories.splice(index, 1);
-                }
-            }
-            
-            function loadPeople(){
-                people = (localStorage['people'] || '').split(',');
-                var index = people.indexOf('');
-                if (index > -1){
-                    people.splice(index, 1);
-                }
-            }
+function loadCategories(){
+    categories = $.parseJSON(localStorage['categories'] || '[]');
+}
 
-            function loadData(){
-                loadCategories();
-                loadPeople();
-            }
+function loadPeople(){
+    people = $.parseJSON(localStorage['people'] || '[]');
+}
 
-            function getCategory(){
-                var category = document.getElementById('category');
-                return category.value;
-            }
+function loadData(){
+    loadCategories();
+    loadPeople();
+}
 
-            function addCategory(){
-                categories.push(getCategory());
-                document.getElementById('category').value = '';
-                displayCategories();
-                localStorage['categories'] = categories.join(',');
-            }
+function saveCategories(){
+    localStorage['categories'] = JSON.stringify(categories);
+}
 
-            function removeCategory(){
-                var category = getCategory();
-                var index = categories.indexOf(category);
-                if (index > -1){
-                    categories.splice(index, 1);
-                    document.getElementById('category').value = '';
-                }
-                else{
-                    alert('<' + category + "> doesn't exist.");
-                }
-                displayCategories();
-                localStorage['categories'] = categories.join(',');
-            }
+function savePeople(){
+    localStorage['people'] = JSON.stringify(people);
+}
 
-            function getPerson(){
-                var person = document.getElementById('person');
-                return person.value;
-            }
+function saveData(){
+    saveCategories();
+    savePeople();
+}
 
-            function addPerson(){
-                people.push(getPerson());
-                document.getElementById('person').value = '';
-                displayPeople();
-                localStorage['people'] = people.join(',');
-            }
+function getCategory(){
+    var category = document.getElementById('category');
+    return category.value;
+}
 
-            function removePerson(){
-                var person = getPerson();
-                var index = people.indexOf(person);
-                if (index > -1){
-                    people.splice(index, 1);
-                    document.getElementById('person').value = '';
-                }
-                else{
-                    alert('<' + person + "> doesn't exist.");
-                }
-                displayPeople();
-                localStorage['people'] = people.join(',');
-            }
+function addCategory(){
+    categories.push(getCategory());
+    document.getElementById('category').value = '';
+    displayCategories();
+    saveCategories();
+}
 
-            function displayPeople(){
-                var output = document.getElementById('people');
-                output.innerHTML = people.join('<br />');
-            }
+function removeCategory(){
+    var category = getCategory();
+    var index = categories.indexOf(category);
+    if (index > -1){
+        categories.splice(index, 1);
+        document.getElementById('category').value = '';
+    }
+    else{
+        alert('<' + category + "> doesn't exist.");
+    }
+    displayCategories();
+    saveCategories()
+}
 
-            function displayCategories(){
-                var output = document.getElementById('categories');
-                output.innerHTML = categories.join('<br />');
-            }
+function getPerson(){
+    var person = document.getElementById('person');
+    return person.value;
+}
 
-            function processKey(e, enter_id, esc_id){
-                if(null == e){
-                    e = window.event;
-                }
+function addPerson(){
+    people.push(getPerson());
+    document.getElementById('person').value = '';
+    displayPeople();
+    savePeople()
+}
 
-                if(e.keyCode == 13){
-                    document.getElementById(enter_id).click();
-                }
-                else if(e.keyCode == 27){
-                    document.getElementById(esc_id).click();
-                }
-            }
+function removePerson(){
+    var person = getPerson();
+    var index = people.indexOf(person);
+    if (index > -1){
+        people.splice(index, 1);
+        document.getElementById('person').value = '';
+    }
+    else{
+        alert('<' + person + "> doesn't exist.");
+    }
+    displayPeople();
+    savePeople()
+}
 
-            $(function() { 
-                var data = [
-                    {"label": "Karyn",
-                    "data": [[0, 10],
-                             [1, 12],
-                             [2, 3],
-                             [3, 4]]
-                     },
-                    {"label": "KayLynn",
-                    "data": [[0, 5],
-                             [0, 2],
-                             [0, 8],
-                             [0, 2]]
-                     },
-                    {"label": "Rosalyn",
-                     "data": [[8, 13, 9, 10]]
-                     }
-                     ];
-                  var options = {
-                     series: {
-                         bars: {
-                             show: true,
-                             barWidth: 0.5,
-                             align: 'center'
-                         },
-                     },
-                     yaxes: {
-                         min: 0
-                     },
-                     xaxis: {
-                         autoscaleMargin: .10
-                     }
-                 };
-                $.plot("#chart_div", data, options);
-            });
+function displayPeople(){
+    var output = document.getElementById('people');
+    output.innerHTML = people.join('<br />');
+}
+
+function displayCategories(){
+    var output = document.getElementById('categories');
+    output.innerHTML = categories.join('<br />');
+}
+
+function processKey(e, enter_id, esc_id){
+    if(null == e){
+        e = window.event;
+    }
+
+    if(e.keyCode == 13){
+        document.getElementById(enter_id).click();
+    }
+    else if(e.keyCode == 27){
+        document.getElementById(esc_id).click();
+    }
+}
+
+$(function() { 
+    var d1 = [[0, 10],
+              [1, 12],
+              [2, 3],
+              [3, 4]];
+    var d2 = [[0, 5],
+              [1, 2],
+              [2, 8],
+              [3, 2]];
+    var d3 = [[0, 8],
+              [1, 13],
+              [2, 9],
+              [3, 10]];
+
+ 
+    var ds = new Array();
+ 
+    ds.push({
+        data:d1,
+        label:"KayLynn",
+        bars: {
+            show: true, 
+            barWidth: 0.2, 
+            order: 1,
+            lineWidth : 2
+        }
+    });
+    ds.push({
+        data:d2,
+        label:"Karyn",
+        bars: {
+            show: true, 
+            barWidth: 0.2, 
+            order: 2
+        }
+    });
+    ds.push({
+        data:d3,
+        label:"Rosalyn",
+        bars: {
+            show: true, 
+            barWidth: 0.2, 
+            order: 3
+        }
+    });
+
+    $.plot("#chart_div", ds);
+
+    loadData();
+    displayCategories();
+    displayPeople();
+    document.getElementById('category').focus();
+});
 
         </script>
     </head>
@@ -161,12 +185,5 @@
             <button id="add_person" onclick="addPerson()">Add</button>
             <button id="remove_person" onclick="removePerson()">Remove</button>
         </div>
-
-        <script>
-            loadData();
-            displayCategories();
-            displayPeople();
-            document.getElementById('category').focus();
-        </script>
     </body>
 </html>
