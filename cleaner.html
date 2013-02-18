@@ -7,6 +7,7 @@
         <script type="text/javascript">
 var categories = [];
 var people = [];
+var plot = undefined;
 
 function loadCategories(){
     categories = $.parseJSON(localStorage['categories'] || '[]');
@@ -14,6 +15,11 @@ function loadCategories(){
 
 function loadPeople(){
     people = $.parseJSON(localStorage['people'] || '[]');
+    for (var x = 0; x < categories.length; x++){
+        for (var y = 0; y < people.length; y++){
+            people[y][categories[x]] = 0;
+        }
+    }
 }
 
 function loadData(){
@@ -26,7 +32,7 @@ function saveCategories(){
 }
 
 function savePeople(){
-    localStorage['people'] = JSON.stringify(people);
+    localStorage['people'] = JSON.stringify(ppl);
 }
 
 function saveData(){
@@ -44,6 +50,11 @@ function addCategory(){
     document.getElementById('category').value = '';
     displayCategories();
     saveCategories();
+}
+
+function clearTable(){
+    $('#stats').find('tbody').remove();
+    $('#stats').append('<tbody></tbody>');
 }
 
 function removeCategory(){
@@ -94,6 +105,69 @@ function displayPeople(){
 function displayCategories(){
     var output = document.getElementById('categories');
     output.innerHTML = categories.join('<br />');
+}
+
+function increase(i, j){
+    people[i][categories[j]] = people[i][categories[j]] + 1;
+    clearTable();
+    displayData();
+}
+
+function decrease(i, j){
+    people[i][categories[j]] = people[i][categories[j]] - 1;
+    clearTable();
+    displayData();
+}
+
+function upButton(i, j){
+    return '<input type="submit" value="+" onclick="increase(' 
+        + i.toString() 
+        + ',' 
+        + j.toString()
+        + ');" />';
+}
+
+function downButton(i, j){
+    return '<input type="submit" value="-" onclick="decrease(' 
+        + i.toString() 
+        + ',' 
+        + j.toString()
+        + ');" />';
+}
+
+function displayData(){
+    var table = $("#stats").find("tbody:last");
+    var row = table.append("<tr>");
+    row.append("<td></td>");
+    for(var i = 0; i < categories.length; i++){
+        row.append("<td>" + categories[i] + "</td>");
+    }
+    table.append("</tr>");
+    var dataset = [];
+    for(var i = 0; i < people.length; i++){
+        row = table.append("<tr>");
+        row.append("<td>" + people[i].name + "</td>");
+        var data = {label: people[i].name,
+                    data: [],
+                    bars: {
+                        show: true,
+                        barWidth: 0.2,
+                        order: i+1,
+                        lineWidth: 2
+                    }
+                    };
+        dataset.push(data);
+        for (var j = 0; j < categories.length; j++){
+            data.data.push([j, people[i][categories[j]]]);
+            row.append("<td>" + people[i][categories[j]]
+                       + upButton(i, j) 
+                       + downButton(i, j) + "</td>");
+        }
+        table.append("</tr>");
+    }
+    plot.setData(data);
+    console.debug(data);
+    plot.draw();
 }
 
 function processKey(e, enter_id, esc_id){
@@ -155,11 +229,12 @@ $(function() {
         }
     });
 
-    $.plot("#chart_div", ds);
+    plot = $.plot("#chart_div", ds);
 
     loadData();
     displayCategories();
     displayPeople();
+    displayData();
     document.getElementById('category').focus();
 });
 
@@ -168,13 +243,17 @@ $(function() {
     <body>
         <div id="chart_div" style="width:800px; height: 400px;">
         </div>
+
+        <table id="stats" border=1><tbody></tbody></table>
+
+
         <div style="border: thin black solid; display: inline-block;">
             Categories:
-        <div id="categories" style="border-top: thin black solid">
-        </div>
-        <input type="text" id="category" onkeydown="processKey(event, 'add_category', 'remove_category')" />
-        <button id="add_category" onclick="addCategory()">Add</button>
-        <button id="remove_category" onclick="removeCategory()">Remove</button>
+            <div id="categories" style="border-top: thin black solid">
+            </div>
+            <input type="text" id="category" onkeydown="processKey(event, 'add_category', 'remove_category')" />
+            <button id="add_category" onclick="addCategory()">Add</button>
+            <button id="remove_category" onclick="removeCategory()">Remove</button>
         </div>
 
         <div style="border: thin black solid; display: inline-block; vertical-align: top;">
