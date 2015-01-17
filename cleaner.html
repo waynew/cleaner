@@ -14,12 +14,19 @@ function loadCategories(){
     categories = $.parseJSON(localStorage['categories'] || '[]');
 }
 
+function redraw(){
+    clearTable();
+    displayData();
+    displayPeople();
+    displayCategories();
+}
+
 function loadPeople(){
     people = $.parseJSON(localStorage['people'] || '[]');
     for (var x = 0; x < categories.length; x++){
         for (var y = 0; y < people.length; y++){
             people[y][categories[x]] = people[y][categories[x]] || 0;
-            people[y].color = people[y].color || [0, 0, 0];
+            people[y].color = people[y].color || "000000";
         }
     }
 }
@@ -34,7 +41,9 @@ function saveCategories(){
 }
 
 function savePeople(){
-    localStorage['people'] = JSON.stringify(people);
+    var stringy = JSON.stringify(people);
+    console.debug(stringy);
+    localStorage['people'] = stringy;
 }
 
 function saveData(){
@@ -48,10 +57,15 @@ function getCategory(){
 }
 
 function addCategory(){
-    categories.push(getCategory());
+    var category = getCategory()
+    categories.push(category);
+    for(var i = 0; i < people.length; i++){
+        people[i][category] = 0;
+    }
     document.getElementById('category').value = '';
-    displayCategories();
+    redraw();
     saveCategories();
+    savePeople();
 }
 
 function clearTable(){
@@ -79,13 +93,15 @@ function getPerson(){
 }
 
 function addPerson(){
-    var person = {name:getPerson()};
+    var person = {name:getPerson(),
+                  color:"000000"};
     for(var i = 0; i < categories.length; i++){
         person[categories[i]] = 0;
     }
     people.push(person);
     document.getElementById('person').value = '';
-    displayPeople();
+    //displayPeople();
+    redraw();
     savePeople()
 }
 
@@ -107,11 +123,7 @@ function removePerson(){
 }
 
 function setColor(index, color){
-    //people[index].color = color.toString();
-    people[index].color = color.rgb;
-    for(var i = 0; i < people[index].color.length; i++){
-        people[index].color[i] = (people[index].color[i]*255).toFixed();
-    }
+    people[index].color = color.toString();
     savePeople();
     clearTable();
     displayData();
@@ -133,9 +145,7 @@ function displayPeople(){
 
     jscolor.init();
     for(var i = 0; i < people.length; i++){
-        $("#"+ people[i].name + "color")[0].color.fromRGB(people[i].color[0]/255,
-                                                          people[i].color[1]/255,
-                                                          people[i].color[2]/255);
+        $("#"+ people[i].name + "color")[0].color.fromString(people[i].color);
     }
 }
 
@@ -188,14 +198,17 @@ function displayData(){
         row.append("<td>" + people[i].name + "</td>");
         var data = {label: people[i].name,
                     data: [],
-                    /*
+                    /*/
                     color: "rgba(" + (255*people[i].color[0]) + ","
                                    + (255*people[i].color[1]) + ","
                                    + (255*people[i].color[2]) + ",1)",
-                                   */
-                    color: "rgba(" + people[i].color[0] + ","
-                                   + people[i].color[1] + ","
-                                   + people[i].color[2] + ",1)",
+                                   /**/
+                    color: '#'+people[i].color,
+                    /**
+                    color: "rgb(" + people[i].color[0] + ","
+                                  + people[i].color[1] + ","
+                                  + people[i].color[2] + ")",
+                                  /**/
                     bars: {
                         show: true,
                         barWidth: 0.2,
@@ -204,8 +217,6 @@ function displayData(){
                     }
                     };
         dataset.push(data);
-        console.debug("Name: " + people[i].name);
-        console.debug(people[i].color);
         for (var j = 0; j < categories.length; j++){
             data.data.push([j, people[i][categories[j]]]);
             row.append("<td>" + people[i][categories[j]]
@@ -238,9 +249,12 @@ function resetData(){
     for(var i = 0; i < people.length; i++){
         for(var j = 0; j < categories.length; j++){
             people[i][categories[j]] = 0;
+            people[i].color = "000000";
+            /*
             people[i].color[0] = 0;
             people[i].color[1] = 0;
             people[i].color[2] = 0;
+            */
         }
     }
     saveData();
