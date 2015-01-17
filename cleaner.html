@@ -211,14 +211,14 @@ function displayData(){
                                   /**/
                     bars: {
                         show: true,
-                        barWidth: 0.2,
+                        barWidth: 10,
                         order: i+1,
                         lineWidth: 2
                     }
                     };
         dataset.push(data);
         for (var j = 0; j < categories.length; j++){
-            data.data.push([j, people[i][categories[j]]]);
+            data.data.push([50+j*100, people[i][categories[j]]]);
             row.append("<td>" + people[i][categories[j]]
                        + upButton(i, j) 
                        + downButton(i, j) + "</td>");
@@ -228,7 +228,7 @@ function displayData(){
 
     var cats = [];
     for(var i = 0; i < categories.length; i++){
-        cats.push([i, categories[i]]);
+        cats.push([50+i*100, categories[i]]);
     }
     plot = $.plot("#chart_div",
             dataset,
